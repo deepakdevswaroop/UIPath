@@ -17,6 +17,12 @@ resource "azurerm_subnet" "this" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+resource "random_pet" "vm_name" {
+  count = var.vm_count
+  length    = 2
+  separator = "-"
+}
+
 resource "azurerm_network_interface" "this" {
   count               = var.vm_count
   name                = "${var.name_prefix}-nic-${count.index}"
@@ -32,7 +38,7 @@ resource "azurerm_network_interface" "this" {
 
 resource "azurerm_linux_virtual_machine" "this" {
   count               = var.vm_count
-  name                = "${var.name_prefix}-vm-${count.index}"
+  name                = "${random_pet.vm_name[count.index].id}"
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
   size                = var.vm_size
@@ -47,8 +53,8 @@ resource "azurerm_linux_virtual_machine" "this" {
   }
 
   os_disk {
-    name              = "${var.name_prefix}-osdisk-${count.index}"
-    caching           = "ReadWrite"
+    name                 = "${var.name_prefix}-osdisk-${count.index}"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
 
