@@ -1,10 +1,19 @@
 import os
+import random
+import string
+
+def generate_suffix(length=4):
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
 def prompt_vm_inputs():
+    suffix = generate_suffix()
+    prefix = input("Enter VM name prefix (e.g., appvm): ")
+    full_prefix = f"{prefix}-{suffix}"
+
     return {
         "vm_count": input("Enter number of VMs: "),
         "vm_size": input("Enter VM size (e.g., Standard_B2s): "),
-        "vm_name_prefix": input("Enter VM name prefix: "),
+        "vm_name_prefix": full_prefix,
         "location": input("Enter Azure location (e.g., eastus): "),
         "resource_group_name": input("Enter Resource Group name: "),
         "admin_username": input("Enter VM admin username: "),
@@ -12,9 +21,13 @@ def prompt_vm_inputs():
     }
 
 def prompt_k8s_inputs():
+    suffix = generate_suffix()
+    base_name = input("Enter base name for Kubernetes cluster (e.g., akscluster): ")
+    full_name = f"{base_name}-{suffix}"
+
     return {
-        "cluster_name": input("Enter Kubernetes cluster name: "),
-        "dns_prefix": input("Enter DNS prefix: "),
+        "cluster_name": full_name,
+        "dns_prefix": f"{base_name}-dns",
         "kubernetes_version": input("Enter Kubernetes version (e.g., 1.29.0): "),
         "node_count": input("Enter number of worker nodes: "),
         "node_vm_size": input("Enter VM size for nodes (e.g., Standard_B2s): "),
