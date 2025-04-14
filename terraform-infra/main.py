@@ -37,6 +37,22 @@ def prompt_k8s_inputs():
         "ssh_public_key": input("Enter path to SSH public key (e.g., ~/.ssh/id_rsa.pub): "),
     }
 
+def prompt_sql_inputs():
+    suffix = generate_suffix()
+    server_base = input("Enter SQL Server name base (e.g., sqlserver): ")
+    db_base = input("Enter SQL Database name (e.g., appdb): ")
+
+    return {
+        "sql_server_name": f"{server_base}-{suffix}",
+        "sql_database_name": db_base,
+        "sql_admin_username": input("Enter SQL admin username: "),
+        "sql_admin_password": input("Enter SQL admin password: "),
+        "sql_sku_name": input("Enter SKU name (e.g., Basic, S0): "),
+        "sql_max_size_gb": input("Enter max size in GB (e.g., 2): "),
+        "location": input("Enter Azure location (e.g., eastus): "),
+        "resource_group_name": input("Enter Resource Group name: "),
+    }
+
 def update_tfvars(tfvars_path, new_vars):
     lines = []
     if os.path.exists(tfvars_path):
@@ -66,13 +82,16 @@ def main():
     print("Choose what to create:")
     print("1. Virtual Machine(s)")
     print("2. Kubernetes Cluster")
+    print("3. SQL Server + Database")
 
-    choice = input("Enter 1 or 2: ").strip()
+    choice = input("Enter 1, 2, or 3: ").strip()
 
     if choice == "1":
         vars_to_write = prompt_vm_inputs()
     elif choice == "2":
         vars_to_write = prompt_k8s_inputs()
+    elif choice == "3":
+        vars_to_write = prompt_sql_inputs()
     else:
         print("❌ Invalid choice.")
         return
