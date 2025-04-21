@@ -52,6 +52,7 @@ Each module accepts specific inputs through the `terraform.tfvars` file. These v
 ### SQL Server Module Inputs
 
 - `sql_server_name`: Name of the SQL Server instance.
+- `sql_server_version`: Version of SQL Server to deploy (e.g., `12.0`, `14.0`). *(NEW)*
 - `sql_database_name`: Name of the SQL Database.
 - `sql_admin_username`: Admin username for SQL Server.
 - `sql_admin_password`: Admin password for SQL Server (sensitive).
@@ -92,7 +93,8 @@ This solution is novel because it combines multiple Terraform modules with a Pyt
 2. Ensure that you have Terraform and Python installed.
 3. Run `main.py` to prompt for inputs and automatically update `terraform.tfvars` based on your selections.
 4. Run Terraform commands to apply the infrastructure:
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
+
+```bash
+terraform init
+terraform plan
+terraform apply
