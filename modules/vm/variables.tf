@@ -1,27 +1,44 @@
 variable "location" {
-  type = string
+  description = "Azure region"
+  type        = string
 }
 
 variable "resource_group_name" {
-  type = string
-}
-
-variable "vm_count" {
-  type = number
-}
-
-variable "vm_size" {
-  type = string
-}
-
-variable "name_prefix" {
-  type = string
+  description = "Resource group name"
+  type        = string
 }
 
 variable "admin_username" {
-  type = string
+  description = "Admin username for VMs"
+  type        = string
 }
 
 variable "ssh_public_key" {
-  type = string
+  description = "SSH public key for authentication"
+  type        = string
+}
+
+variable "vm_count" {
+  description = "Number of VMs to create"
+  type        = number
+}
+
+variable "vm_size" {
+  description = "VM size (SKU)"
+  type        = string
+}
+
+variable "vm_name_prefix" {
+  description = "Prefix for VM names"
+  type        = string
+}
+
+variable "assign_public_ip_to" {
+  description = "Which resource to assign public IP"
+  type        = string
+}
+
+variable "public_ip_name" {
+  description = "Name of the shared public IP"
+  type        = string
 }
