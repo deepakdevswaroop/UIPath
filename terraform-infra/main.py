@@ -11,6 +11,8 @@ def prompt_vm_inputs():
     full_prefix = f"{prefix}-{suffix}"
 
     return {
+        "assign_public_ip_to": "vm",
+        "public_ip_name": f"shared-ip-{suffix}",
         "vm_count": input("Enter number of VMs: "),
         "vm_size": input("Enter VM size (e.g., Standard_B2s): "),
         "vm_name_prefix": full_prefix,
@@ -22,10 +24,12 @@ def prompt_vm_inputs():
 
 def prompt_k8s_inputs():
     suffix = generate_suffix()
-    base_name = input("Enter base name for Kubernetes cluster (e.g., akscluster): ")
+    base_name = input("Enter base name for Kubernetes cluster (e.g., aks-cluster): ")
     full_name = f"{base_name}-{suffix}"
 
     return {
+        "assign_public_ip_to": "k8s",
+        "public_ip_name": f"shared-ip-{suffix}",
         "cluster_name": full_name,
         "dns_prefix": f"{base_name}-dns",
         "kubernetes_version": input("Enter Kubernetes version (e.g., 1.29.0): "),
@@ -39,16 +43,14 @@ def prompt_k8s_inputs():
 
 def prompt_sql_inputs():
     suffix = generate_suffix()
-    server_base = input("Enter SQL Server name base (e.g., sqlserver): ")
-    db_base = input("Enter SQL Database name (e.g., appdb): ")
+    server_base = input("Enter SQL Server base name (e.g., sqlserver): ")
 
     return {
+        "assign_public_ip_to": "sql",
+        "public_ip_name": f"shared-ip-{suffix}",
         "sql_server_name": f"{server_base}-{suffix}",
-        "sql_database_name": db_base,
-        "sql_admin_username": input("Enter SQL admin username: "),
+        "sql_admin_user": input("Enter SQL admin username: "),
         "sql_admin_password": input("Enter SQL admin password: "),
-        "sql_sku_name": input("Enter SKU name (e.g., Basic, S0): "),
-        "sql_max_size_gb": input("Enter max size in GB (e.g., 2): "),
         "location": input("Enter Azure location (e.g., eastus): "),
         "resource_group_name": input("Enter Resource Group name: "),
     }
@@ -69,7 +71,9 @@ def update_tfvars(tfvars_path, new_vars):
 
     with open(tfvars_path, "w") as file:
         for key, val in tfvars.items():
-            if val.lower() in ["true", "false"] or val.isnumeric() or val.startswith("["):
+            if isinstance(val, bool) or val.lower() in ["true", "false"]:
+                file.write(f'{key} = {val}\n')
+            elif val.isnumeric():
                 file.write(f'{key} = {val}\n')
             elif val.startswith('"') and val.endswith('"'):
                 file.write(f'{key} = {val}\n')
@@ -82,7 +86,7 @@ def main():
     print("Choose what to create:")
     print("1. Virtual Machine(s)")
     print("2. Kubernetes Cluster")
-    print("3. SQL Server + Database")
+    print("3. SQL Server")
 
     choice = input("Enter 1, 2, or 3: ").strip()
 
