@@ -1,41 +1,50 @@
-variable "sql_server_name" {
-  description = "The name of the SQL Server"
-  type        = string
-}
-
-variable "sql_database_name" {
-  description = "The name of the SQL Database"
-  type        = string
-}
-
 variable "location" {
   description = "Azure region"
   type        = string
 }
 
 variable "resource_group_name" {
-  description = "Resource group for the SQL Server"
+  description = "Resource group name"
   type        = string
 }
 
-variable "admin_username" {
+variable "sql_server_name" {
+  description = "SQL Server name"
+  type        = string
+}
+
+variable "sql_database_name" {
+  description = "SQL Database name"
+  type        = string
+}
+
+variable "sql_admin_username" {
   description = "SQL Server admin username"
   type        = string
 }
 
-variable "admin_password" {
+variable "sql_admin_password" {
   description = "SQL Server admin password"
   type        = string
   sensitive   = true
 }
 
-variable "sku_name" {
-  description = "The SKU name for the database (e.g., Basic, S0, P1)"
+variable "sql_sku_name" {
+  description = "SQL SKU (e.g., Basic, S0)"
   type        = string
 }
 
-variable "max_size_gb" {
-  description = "Max size of the SQL database in GB"
+variable "sql_max_size_gb" {
+  description = "Maximum size of the database in GB"
   type        = number
-  default     = 2
+}
+
+variable "assign_public_ip_to" {
+  description = "Which resource to assign public IP"
+  type        = string
+}
+
+variable "public_ip_name" {
+  description = "Name of the shared public IP"
+  type        = string
 }
