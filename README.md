@@ -85,6 +85,7 @@ A Python script (`main.py`) is provided to dynamically update `terraform.tfvars`
 
 ---
 
+
 ## 🚀 Usage
 
 ```bash
@@ -99,11 +100,13 @@ python3 main.py
 terraform init
 terraform plan
 terraform apply
+```
 
 ---
 
 ## Architecture Diagram
 
+```bash
 terraform-infra/
 ├── main.tf                  # Orchestration - controls modules and resources
 ├── variables.tf             # Input variable definitions
@@ -115,3 +118,4 @@ terraform-infra/
 │   ├── vm/                  # Virtual Machine module
 │   ├── k8s/                 # AKS Cluster module
 │   └── sql/                 # SQL Server module
+```
