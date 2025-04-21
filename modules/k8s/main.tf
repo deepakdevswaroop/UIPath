@@ -23,16 +23,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
     }
   }
 
+  # Example: Attach shared public IP to outbound profile
+  network_profile {
+    load_balancer_sku = "standard"
+    outbound_ip_address_ids = [var.public_ip_id]
+  }
+
   tags = {
     Environment = "Terraform"
   }
-}
-
-resource "azurerm_public_ip" "k8s_public_ip" {
-  count               = var.assign_public_ip_to == "k8s" ? 1 : 0
-  name                = var.public_ip_name
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
 }
