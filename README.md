@@ -17,26 +17,6 @@ This repository includes reusable modules to create:
 
 A Python script (`main.py`) is provided to dynamically update `terraform.tfvars` based on user input.
 
----
-
-## 📐 Architecture Diagram
-
-```bash
-terraform-infra/
-├── main.tf                  # Orchestration - controls modules and resources
-├── variables.tf             # Input variable definitions
-├── terraform.tfvars         # Populated dynamically with runtime values
-├── outputs.tf               # Output values from resources
-├── main.py                  # Python script to dynamically update tfvars
-├── modules/
-│   ├── public_ip/           # Shared Public IP module
-│   ├── vm/                  # Virtual Machine module
-│   ├── k8s/                 # AKS Cluster module
-│   └── sql/                 # SQL Server module
-
-
----
-
 ## ✅ Features
 
 - **Shared Public IP Logic**: A central public IP resource is provisioned and passed to the selected module (`vm`, `k8s`, or `sql`) using a single variable.
@@ -119,3 +99,19 @@ python3 main.py
 terraform init
 terraform plan
 terraform apply
+
+
+**## Architecture Diagram**
+
+```bash
+terraform-infra/
+├── main.tf                  # Orchestration - controls modules and resources
+├── variables.tf             # Input variable definitions
+├── terraform.tfvars         # Populated dynamically with runtime values
+├── outputs.tf               # Output values from resources
+├── main.py                  # Python script to dynamically update tfvars
+├── modules/
+│   ├── public_ip/           # Shared Public IP module
+│   ├── vm/                  # Virtual Machine module
+│   ├── k8s/                 # AKS Cluster module
+│   └── sql/                 # SQL Server module
