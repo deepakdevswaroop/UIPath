@@ -2,8 +2,8 @@ resource "azurerm_sql_server" "sql_server" {
   name                         = var.sql_server_name
   location                     = var.location
   resource_group_name          = var.resource_group_name
-  version                      = "12.0"
-  administrator_login          = var.sql_admin_username
+  version                      = var.sql_server_version  # Updated to use variable
+  administrator_login          = var.sql_admin_user      # Fixed variable name to match declaration
   administrator_login_password = var.sql_admin_password
 
   tags = {
