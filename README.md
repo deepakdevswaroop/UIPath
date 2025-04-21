@@ -21,8 +21,18 @@ A Python script (`main.py`) is provided to dynamically update `terraform.tfvars`
 
 ## 📐 Architecture Diagram
 
-terraform-infra/ ├── main.tf # Orchestration - controls modules and resources ├── variables.tf # Input variable definitions ├── terraform.tfvars # Populated dynamically with runtime values ├── outputs.tf # Output values from resources ├── main.py # Python script to dynamically update tfvars ├── modules/ │ ├── public_ip/ # Shared public IP module │ ├── vm/ # Virtual Machine module │ ├── k8s/ # AKS Cluster module │ └── sql/ # SQL Server module
-
+```bash
+terraform-infra/
+├── main.tf                  # Orchestration - controls modules and resources
+├── variables.tf             # Input variable definitions
+├── terraform.tfvars         # Populated dynamically with runtime values
+├── outputs.tf               # Output values from resources
+├── main.py                  # Python script to dynamically update tfvars
+├── modules/
+│   ├── public_ip/           # Shared Public IP module
+│   ├── vm/                  # Virtual Machine module
+│   ├── k8s/                 # AKS Cluster module
+│   └── sql/                 # SQL Server module
 
 
 ---
