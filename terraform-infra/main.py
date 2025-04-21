@@ -57,12 +57,10 @@ def prompt_sql_inputs():
     }
 
 def update_sql_version():
-    # Prompt for the current and new version
     server_name = input("Enter the SQL Server name to update: ")
     resource_group = input("Enter the Resource Group name: ")
     new_version = input("Enter the new SQL Server version (e.g., 12.0, 14.0): ")
 
-    # Run the az CLI command to update the SQL Server version
     print(f"Updating SQL Server {server_name} to version {new_version}...")
     try:
         result = subprocess.run(
@@ -81,6 +79,11 @@ def update_sql_version():
     except subprocess.CalledProcessError as e:
         print(f"❌ Failed to update SQL Server: {e.stderr}")
         print(e.output)
+
+def upgrade_kubernetes_version(tfvars_path="terraform.tfvars"):
+    new_version = input("Enter the new Kubernetes version to upgrade to (e.g., 1.29.0): ")
+    update_tfvars(tfvars_path, {"kubernetes_version": new_version})
+    print(f"✅ Kubernetes version updated to {new_version} in {tfvars_path}")
 
 def update_tfvars(tfvars_path, new_vars):
     lines = []
@@ -115,23 +118,25 @@ def main():
     print("2. Kubernetes Cluster")
     print("3. SQL Server")
     print("4. Update SQL Server Version")
+    print("5. Upgrade Kubernetes Version")
 
-    choice = input("Enter 1, 2, 3, or 4: ").strip()
+    choice = input("Enter your choice (1-5): ").strip()
 
     if choice == "1":
         vars_to_write = prompt_vm_inputs()
+        update_tfvars("terraform.tfvars", vars_to_write)
     elif choice == "2":
         vars_to_write = prompt_k8s_inputs()
+        update_tfvars("terraform.tfvars", vars_to_write)
     elif choice == "3":
         vars_to_write = prompt_sql_inputs()
+        update_tfvars("terraform.tfvars", vars_to_write)
     elif choice == "4":
         update_sql_version()
-        return
+    elif choice == "5":
+        upgrade_kubernetes_version()
     else:
         print("❌ Invalid choice.")
-        return
-
-    update_tfvars("terraform.tfvars", vars_to_write)
 
 if __name__ == "__main__":
     main()
