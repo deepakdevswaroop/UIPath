@@ -18,3 +18,12 @@ output "assigned_resource" {
 output "public_ip_id" {
   value = module.public_ip.public_ip_id
 }
+
+# SQL Server outputs
+output "sql_server_name" {
+  value = module.sql.sql_server_name
+}
+
+output "sql_server_version" {
+  value = var.sql_server_version
+}
