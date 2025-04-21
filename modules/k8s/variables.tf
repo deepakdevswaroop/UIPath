@@ -1,35 +1,54 @@
 variable "location" {
-  type = string
+  description = "Azure region"
+  type        = string
 }
 
 variable "resource_group_name" {
-  type = string
-}
-
-variable "cluster_name" {
-  type = string
-}
-
-variable "dns_prefix" {
-  type = string
-}
-
-variable "kubernetes_version" {
-  type = string
-}
-
-variable "node_count" {
-  type = number
-}
-
-variable "node_vm_size" {
-  type = string
+  description = "Resource group name"
+  type        = string
 }
 
 variable "admin_username" {
-  type = string
+  description = "Admin username"
+  type        = string
 }
 
 variable "ssh_public_key" {
-  type = string
+  description = "SSH public key path"
+  type        = string
+}
+
+variable "cluster_name" {
+  description = "AKS cluster name"
+  type        = string
+}
+
+variable "dns_prefix" {
+  description = "DNS prefix for AKS"
+  type        = string
+}
+
+variable "kubernetes_version" {
+  description = "Kubernetes version"
+  type        = string
+}
+
+variable "node_count" {
+  description = "Number of worker nodes"
+  type        = number
+}
+
+variable "node_vm_size" {
+  description = "VM size for node pool"
+  type        = string
+}
+
+variable "assign_public_ip_to" {
+  description = "Which resource to assign public IP"
+  type        = string
+}
+
+variable "public_ip_name" {
+  description = "Name of the shared public IP"
+  type        = string
 }
