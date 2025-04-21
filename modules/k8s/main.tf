@@ -24,6 +24,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   tags = {
-    Environment = "Dev"
+    Environment = "Terraform"
   }
+}
+
+resource "azurerm_public_ip" "k8s_public_ip" {
+  count               = var.assign_public_ip_to == "k8s" ? 1 : 0
+  name                = var.public_ip_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
