@@ -48,6 +48,13 @@ module "k8s" {
   location            = var.location
   resource_group_name = var.resource_group_name
   public_ip_id        = module.public_ip.public_ip_id
+
+  kubernetes_version  = var.kubernetes_version    
+  dns_prefix          = var.dns_prefix            
+  node_count          = var.node_count            
+  node_vm_size        = var.node_vm_size          
+  admin_username      = var.admin_username       
+  ssh_public_key      = var.ssh_public_key        
 }
 
 # -----------------------------
