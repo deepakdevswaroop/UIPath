@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import subprocess  # To run az CLI commands
 
 def generate_suffix(length=4):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
@@ -55,6 +56,32 @@ def prompt_sql_inputs():
         "resource_group_name": input("Enter Resource Group name: "),
     }
 
+def update_sql_version():
+    # Prompt for the current and new version
+    server_name = input("Enter the SQL Server name to update: ")
+    resource_group = input("Enter the Resource Group name: ")
+    new_version = input("Enter the new SQL Server version (e.g., 12.0, 14.0): ")
+
+    # Run the az CLI command to update the SQL Server version
+    print(f"Updating SQL Server {server_name} to version {new_version}...")
+    try:
+        result = subprocess.run(
+            [
+                "az", "sql", "server", "update",
+                "--name", server_name,
+                "--resource-group", resource_group,
+                "--version", new_version
+            ],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(f"✅ Successfully updated SQL Server to version {new_version}.")
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Failed to update SQL Server: {e.stderr}")
+        print(e.output)
+
 def update_tfvars(tfvars_path, new_vars):
     lines = []
     if os.path.exists(tfvars_path):
@@ -83,12 +110,13 @@ def update_tfvars(tfvars_path, new_vars):
     print(f"\n✅ Updated {tfvars_path} with new values.")
 
 def main():
-    print("Choose what to create:")
+    print("Choose what to create or update:")
     print("1. Virtual Machine(s)")
     print("2. Kubernetes Cluster")
     print("3. SQL Server")
+    print("4. Update SQL Server Version")
 
-    choice = input("Enter 1, 2, or 3: ").strip()
+    choice = input("Enter 1, 2, 3, or 4: ").strip()
 
     if choice == "1":
         vars_to_write = prompt_vm_inputs()
@@ -96,6 +124,9 @@ def main():
         vars_to_write = prompt_k8s_inputs()
     elif choice == "3":
         vars_to_write = prompt_sql_inputs()
+    elif choice == "4":
+        update_sql_version()
+        return
     else:
         print("❌ Invalid choice.")
         return
