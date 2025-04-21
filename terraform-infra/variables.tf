@@ -78,6 +78,12 @@ variable "sql_admin_password" {
   sensitive   = true
 }
 
+variable "sql_server_version" {
+  description = "Version of SQL Server to deploy (e.g., 12.0, 14.0, etc.)"
+  type        = string
+  default     = "12.0"  # Default to SQL Server 2014 version
+}
+
 # Public IP assignment
 variable "assign_public_ip_to" {
   description = "Target resource to assign public IP: vm, sql, or k8s"
