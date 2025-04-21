@@ -1,3 +1,4 @@
+# Global settings
 variable "location" {
   description = "Azure location"
   type        = string
@@ -57,5 +58,39 @@ variable "node_count" {
 
 variable "node_vm_size" {
   description = "VM size for Kubernetes worker nodes"
+  type        = string
+}
+
+# SQL Server module inputs
+variable "sql_server_name" {
+  description = "Name of the SQL Server instance"
+  type        = string
+}
+
+variable "sql_admin_user" {
+  description = "SQL Server admin username"
+  type        = string
+}
+
+variable "sql_admin_password" {
+  description = "SQL Server admin password"
+  type        = string
+  sensitive   = true
+}
+
+# Public IP assignment
+variable "assign_public_ip_to" {
+  description = "Target resource to assign public IP: vm, sql, or k8s"
+  type        = string
+}
+
+variable "public_ip_name" {
+  description = "Shared public IP name"
+  type        = string
+}
+
+# Network reference
+variable "subnet_id" {
+  description = "Azure subnet ID where resources are deployed"
   type        = string
 }
