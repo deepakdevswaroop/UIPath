@@ -100,10 +100,10 @@ terraform init
 terraform plan
 terraform apply
 
+---
 
-**## Architecture Diagram**
+## Architecture Diagram
 
-```bash
 terraform-infra/
 ├── main.tf                  # Orchestration - controls modules and resources
 ├── variables.tf             # Input variable definitions
