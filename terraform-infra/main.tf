@@ -61,6 +61,7 @@ module "sql" {
   location            = var.location
   resource_group_name = var.resource_group_name
   public_ip_id        = module.public_ip.public_ip_id
+  sql_server_version  = var.sql_server_version  # Adding version dynamically
 }
 
 # -----------------------------
