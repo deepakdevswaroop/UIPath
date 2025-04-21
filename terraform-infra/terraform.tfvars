@@ -20,6 +20,7 @@ node_vm_size         = "Standard_B2s"
 sql_server_name      = "sql-infra"
 sql_admin_user       = "sqladmin"
 sql_admin_password   = "YourSecurePassword123!"
+sql_server_version   = "12.0"  # Adding SQL server version setting
 
 # Public IP assignment
 assign_public_ip_to  = "vm"  # Options: vm, sql, k8s
