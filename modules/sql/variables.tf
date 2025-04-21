@@ -18,7 +18,7 @@ variable "sql_database_name" {
   type        = string
 }
 
-variable "sql_admin_username" {
+variable "sql_admin_user" {
   description = "SQL Server admin username"
   type        = string
 }
@@ -27,6 +27,12 @@ variable "sql_admin_password" {
   description = "SQL Server admin password"
   type        = string
   sensitive   = true
+}
+
+variable "sql_server_version" {
+  description = "SQL Server version (e.g., 12.0, 14.0)"
+  type        = string
+  default     = "12.0"
 }
 
 variable "sql_sku_name" {
