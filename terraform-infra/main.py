@@ -2,6 +2,19 @@ import os
 import random
 import string
 import subprocess
+import logging
+from datetime import datetime
+
+# Setup structured logging
+log_file = f"infra_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_file),
+        logging.StreamHandler()
+    ]
+)
 
 def generate_suffix(length=4):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
@@ -15,13 +28,14 @@ def check_existing_resource(resource_group, resource_type, name):
         )
         return result.returncode == 0
     except Exception as e:
-        print(f"⚠️ Could not verify resource existence: {e}")
+        logging.warning(f"Could not verify resource existence: {e}")
         return False
 
 def validate_ssh_key(path):
-    if not os.path.exists(os.path.expanduser(path)):
-        raise FileNotFoundError(f"❌ SSH key not found at {path}")
-    return path
+    expanded = os.path.expanduser(path)
+    if not os.path.exists(expanded):
+        raise FileNotFoundError(f"SSH key not found at {expanded}")
+    return expanded
 
 def prompt_vm_inputs():
     suffix = generate_suffix()
@@ -32,7 +46,7 @@ def prompt_vm_inputs():
     resource_group = input("Enter Resource Group name: ")
 
     if check_existing_resource(resource_group, "vm", full_prefix):
-        raise Exception(f"❌ A VM with name {full_prefix} already exists in {resource_group}.")
+        raise Exception(f"VM with name {full_prefix} already exists in {resource_group}.")
 
     ssh_key = input("Enter path to SSH public key (e.g., ~/.ssh/id_rsa.pub): ")
     validate_ssh_key(ssh_key)
@@ -58,7 +72,7 @@ def prompt_k8s_inputs():
     resource_group = input("Enter Resource Group name: ")
 
     if check_existing_resource(resource_group, "aks", full_name):
-        raise Exception(f"❌ AKS Cluster {full_name} already exists in {resource_group}.")
+        raise Exception(f"AKS Cluster {full_name} already exists in {resource_group}.")
 
     ssh_key = input("Enter path to SSH public key (e.g., ~/.ssh/id_rsa.pub): ")
     validate_ssh_key(ssh_key)
@@ -86,7 +100,7 @@ def prompt_sql_inputs():
     resource_group = input("Enter Resource Group name: ")
 
     if check_existing_resource(resource_group, "sql", server_name):
-        raise Exception(f"❌ SQL Server {server_name} already exists in {resource_group}.")
+        raise Exception(f"SQL Server {server_name} already exists in {resource_group}.")
 
     return {
         "assign_public_ip_to": "sql",
@@ -104,22 +118,23 @@ def update_sql_version():
     new_version = input("Enter new SQL Server version (e.g., 12.0, 14.0): ")
 
     if not check_existing_resource(resource_group, "sql", server_name):
-        print(f"❌ SQL Server {server_name} does not exist in {resource_group}.")
+        logging.error(f"SQL Server {server_name} does not exist in {resource_group}.")
         return
 
     try:
         subprocess.run(
-            ["az", "sql", "server", "update", "--name", server_name, "--resource-group", resource_group, "--version", new_version],
+            ["az", "sql", "server", "update", "--name", server_name,
+             "--resource-group", resource_group, "--version", new_version],
             check=True
         )
-        print(f"✅ SQL Server {server_name} updated to version {new_version}")
+        logging.info(f"SQL Server {server_name} updated to version {new_version}")
     except subprocess.CalledProcessError as e:
-        print(f"❌ Update failed: {e.stderr}")
+        logging.error(f"Update failed: {e.stderr}")
 
 def upgrade_kubernetes_version(tfvars_path="terraform.tfvars"):
     new_version = input("Enter new Kubernetes version (e.g., 1.29.0): ")
     update_tfvars(tfvars_path, {"kubernetes_version": new_version})
-    print(f"✅ Kubernetes version updated to {new_version} in {tfvars_path}")
+    logging.info(f"Kubernetes version updated to {new_version} in {tfvars_path}")
 
 def update_tfvars(tfvars_path, new_vars):
     lines = []
@@ -146,6 +161,15 @@ def update_tfvars(tfvars_path, new_vars):
             else:
                 f.write(f'{key} = "{val}"\n')
 
+def run_terraform_plan():
+    try:
+        logging.info("Running Terraform plan for integration check...")
+        subprocess.run(["terraform", "init"], check=True)
+        subprocess.run(["terraform", "plan"], check=True)
+        logging.info("Terraform plan executed successfully.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Terraform plan failed: {e}")
+
 def main():
     print("Choose what to create or update:")
     print("1. Virtual Machine(s)")
@@ -153,8 +177,9 @@ def main():
     print("3. SQL Server")
     print("4. Update SQL Server Version")
     print("5. Upgrade Kubernetes Version")
+    print("6. Run Integration Test (Terraform Plan)")
 
-    choice = input("Enter your choice (1-5): ").strip()
+    choice = input("Enter your choice (1-6): ").strip()
 
     try:
         if choice == "1":
@@ -170,10 +195,12 @@ def main():
             update_sql_version()
         elif choice == "5":
             upgrade_kubernetes_version()
+        elif choice == "6":
+            run_terraform_plan()
         else:
-            print("❌ Invalid choice.")
+            logging.warning("Invalid choice.")
     except Exception as e:
-        print(f"⚠️ Error: {e}")
+        logging.error(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
