@@ -43,9 +43,9 @@ This document evaluates the implementation against the **Take-Home Assignment: I
 
 | Requirement | Status | Suggestions |
 |------------|--------|-------------|
-| **Unit testing** | ❌ | Not yet implemented. Could add unit tests for Python `update_tfvars` and CLI logic. |
-| **Integration testing** | ❌ | Could use `subprocess` to simulate a dry run with Terraform. |
-| **Logging & error handling** | ⚠️ | Basic `print` and `try-except` exist. Could add structured logging via Python's `logging` module. |
+| **Unit testing** | ✅ | Added unit tests for Python `update_tfvars` and CLI logic. |
+| **Integration testing** | ✅ | Used `subprocess` to simulate a dry run with Terraform. |
+| **Logging & error handling** | ✅ | Basic `print` and `try-except` exist. Added structured logging via Python's `logging` module. |
 | **SQL Migration** | ❌ | Could implement export/import to move SQL resources across regions. |
 | **Implemented in Golang** | ❌ | Python is used. Acceptable unless specifically required. |
 
