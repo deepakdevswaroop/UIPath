@@ -44,7 +44,7 @@ This document evaluates the implementation against the **Take-Home Assignment: I
 | Requirement | Status | Suggestions |
 |------------|--------|-------------|
 | **Unit testing** | ✅ | Added unit tests for Python `update_tfvars` and CLI logic. |
-| **Integration testing** | ✅ | Used `subprocess` to simulate a dry run with Terraform. |
+| **Integration testing** | ✅ | Used `subprocess` and `terraform plan` to simulate a dry run with Terraform. |
 | **Logging & error handling** | ✅ | Basic `print` and `try-except` exist. Added structured logging via Python's `logging` module. |
 | **SQL Migration** | ❌ | Could implement export/import to move SQL resources across regions. |
 | **Implemented in Golang** | ❌ | Python is used. Acceptable unless specifically required. |
@@ -75,9 +75,6 @@ Your solution **meets all core requirements** and is already in a great state.
 
 ### To go above and beyond:
 
-- [ ] Add **unit tests** for Python functions like `update_tfvars()`
-- [ ] Include **integration test** using a `terraform plan` dry-run
-- [ ] Add **structured logging** (`logging.info`, `logging.error`)
 - [ ] Consider implementing **SQL migration logic**
 - [ ] Optionally explore a **Golang version** if time allows
 
