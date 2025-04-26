@@ -1,8 +1,6 @@
-# UIPath
+# Azure Infrastructure Automation with Terraform 🚀
 
-# Azure Infrastructure Automation with Terraform
-
-This Terraform project automates the deployment of Azure infrastructure, including Virtual Machines (VMs), Kubernetes clusters (AKS), SQL Servers, and a shared public IP. It is built with modularity, scalability, API integration, and dynamic input validation in mind.
+This Terraform project automates the deployment of Azure infrastructure, including Virtual Machines (VMs), Kubernetes clusters (AKS), SQL Servers, and a shared public IP. It is built with modularity, scalability, edge case validation, and dynamic user-driven input in mind.
 
 ---
 
@@ -15,64 +13,34 @@ This repository includes reusable modules to create:
 - ✅ SQL Server and Database
 - ✅ Shared Public IP (dynamically assigned to one module)
 
-A Python script (`main.py`) and a REST API (`app/main.py`) are provided to dynamically update `terraform.tfvars` based on user input.
+A Python script (`main.py`) is provided to dynamically update `terraform.tfvars` based on user input and includes structured logging, validation, and basic error handling.
 
 ---
 
 ## ✅ Features
 
 - **Shared Public IP Logic**: A central public IP resource is provisioned and passed to the selected module (`vm`, `k8s`, or `sql`) using a single variable.
-- **Dynamic Configuration via CLI & API**: 
-  - Use `main.py` for interactive CLI-based input.
-  - Use the REST API (FastAPI) for automation or integration with frontends or CI/CD.
+- **Dynamic Configuration**: A Python CLI and optional FastAPI interface prompts for values and updates the `terraform.tfvars` automatically.
 - **Modular Design**: Easily extend or reuse infrastructure by adding more modules.
-- **Randomized Resource Naming**: Prevents name collisions using `random_string`.
+- **Randomized Resource Naming**: Prevents name collisions using `random_string` logic.
 - **Selective Deployment**: Only the selected module (based on user input) is deployed with a public IP.
-- **Secure & Idempotent**: Follows Terraform best practices including sensitive value handling and idempotent design.
-- **Edge Case Handling & Validation**:
+- **Secure & Idempotent**: Follows Terraform best practices including sensitive value handling and idempotent deployment logic.
+- **Validation & Edge Case Handling**:
   - Prevents creation of resources with existing names using Azure CLI.
   - SSH public key validation before proceeding.
-  - SQL Server version upgrade validation.
-  - Kubernetes version upgrade directly modifies `.tfvars`.
+  - SQL Server version and Kubernetes version upgrades with dry-run simulation.
+- **Logging**: Uses structured logging instead of raw `print()` statements for consistent CLI feedback.
+- **Extensible API**: A FastAPI interface enables dynamic updates to infrastructure through RESTful calls.
 
 ---
 
 ## 🧪 Bonus Requirements (Optional)
 
-| Requirement              | Status | Suggestions                                                                 |
-|--------------------------|--------|------------------------------------------------------------------------------|
-| Unit testing             | ✅     | Added via `tests/test_logic.py` using `pytest`.                            |
-| Integration testing      | ✅     | Terraform dry-run (`terraform plan`) is run via `subprocess`.              |
-| Logging & error handling | ✅     | Replaced `print()` with structured logging using Python’s `logging` module.|
-
----
-
-## 🛠️ API Usage
-
-We’ve built a FastAPI backend to accept JSON payloads and dynamically update `terraform.tfvars`.
-
-### Run the API Server
-
-```bash
-uvicorn app.main:app --reload
-```
-
-### Example Request (POST /configure)
-
-```bash
-curl -X POST http://localhost:8000/configure   -H "Content-Type: application/json"   -d '{
-    "resource_type": "vm",
-    "params": {
-      "prefix": "myapp",
-      "location": "eastus",
-      "resource_group": "my-rg",
-      "ssh_public_key": "~/.ssh/id_rsa.pub",
-      "vm_size": "Standard_B2s",
-      "vm_count": 2,
-      "admin_username": "azureuser"
-    }
-  }'
-```
+| Requirement           | Status  | Suggestions                                                                 |
+|-----------------------|---------|------------------------------------------------------------------------------|
+| Unit testing          | ❌      | Not yet implemented. Could add unit tests for `update_tfvars` and CLI logic.|
+| Integration testing   | ❌      | Could use `subprocess` to simulate a dry run with Terraform (`terraform plan`).|
+| Logging & error handling | ⚠️   | Basic logging implemented. Can improve using structured logging with log levels.|
 
 ---
 
@@ -116,47 +84,61 @@ curl -X POST http://localhost:8000/configure   -H "Content-Type: application/jso
 
 ## 🛡️ Edge Case Handling
 
-| Case | Handling |
-|------|----------|
-| **Duplicate Names** | Azure CLI check for existing VM, AKS, SQL resources in the specified resource group |
-| **Invalid SSH Key Path** | Raises error if the key path doesn't exist |
-| **Public IP Conflicts** | Only one resource receives the shared IP |
-| **Invalid Updates** | Validates SQL Server & AKS upgrades |
-| **Sensitive Data** | Passwords and secrets marked as `sensitive` in Terraform |
-| **Terraform Variable Format** | Python script ensures values are written with correct format (`quotes`, `bool`, `numeric`) |
+| Case                     | Handling                                                                 |
+|--------------------------|--------------------------------------------------------------------------|
+| **Duplicate Names**      | Azure CLI check for existing VM, AKS, SQL resources in the resource group|
+| **Invalid SSH Key Path** | Raises error if the key path doesn't exist                              |
+| **Public IP Conflicts**  | Only one resource receives the shared IP                                |
+| **Invalid Updates**      | Validates SQL Server & AKS version upgrades using live checks           |
+| **Sensitive Data**       | Passwords and secrets marked as `sensitive` in Terraform                |
+| **Terraform Formatting** | Python script ensures `terraform.tfvars` format is respected (quoted, bool, int)|
+
+---
+
+## 📌 Assumptions
+
+The following assumptions were made in designing and implementing this solution:
+
+1. **User Access & Permissions**  
+   It is assumed that the user has appropriate Azure credentials and CLI access with sufficient permissions to create and manage resources.
+
+2. **Azure CLI Installed**  
+   The system executing the script must have the Azure CLI (`az`) installed and configured.
+
+3. **SSH Key Exists**  
+   Users are expected to provide a valid path to an existing SSH public key.
+
+4. **Terraform Installed & Configured**  
+   Terraform is expected to be installed and usable via the CLI. Backend configuration is assumed to be local unless extended.
+
+5. **Resource Naming Convention**  
+   Names are suffixed randomly to avoid naming collisions.
+
+6. **Single Public IP Use Case**  
+   Only one module uses the shared public IP at a time.
+
+7. **Modular Inputs**  
+   Inputs are passed through `.tfvars` and assumed to follow Terraform conventions.
+
+8. **No Parallel Runs**  
+   The system assumes no concurrent `terraform apply` runs occur in the same working directory.
 
 ---
 
 ## ⚙️ Scalability & Reliability
 
-- **Scale Easily**: Add new modules or scale VM/node count.
-- **Safe Deployments**: Modular design keeps resources isolated.
-- **Idempotent Infrastructure**: Terraform ensures repeat runs are consistent and don’t duplicate resources.
+- **Scale Easily**: Add new modules or scale VM/node count through variables.
+- **Safe Deployments**: Modular design keeps resources isolated and predictable.
+- **Idempotent Infrastructure**: Terraform ensures consistent state on repeated runs.
 
 ---
 
 ## 🔄 How to Extend
 
-1. **New Modules**: Add new modules (e.g., Storage, Load Balancer) under `modules/` and wire into `main.tf`.
-2. **Multi-Env**: Add support in `main.py` or API to manage different `.tfvars` for environments like `dev`, `staging`, `prod`.
-3. **CI/CD Integration**: Integrate with Terraform Cloud, GitHub Actions, or Azure DevOps pipelines.
-4. **Validation Rules**: Enhance Python logic for regional VM size validation or cost estimation APIs.
-
----
-
-## 🐳 Docker Support
-
-### Build
-
-```bash
-docker build -t azure-terraform-api .
-```
-
-### Run
-
-```bash
-docker run -p 8000:8000 azure-terraform-api
-```
+1. **New Modules**: Add new modules under `modules/` and wire into `main.tf`.
+2. **Multi-Env Support**: Extend Python to manage `dev.tfvars`, `prod.tfvars`, etc.
+3. **API-driven Control**: Use FastAPI endpoints to create an infrastructure management UI or integrate with CI/CD.
+4. **Enhanced Validation**: Add regional validation for VM sizes or estimated pricing.
 
 ---
 
@@ -167,11 +149,8 @@ docker run -p 8000:8000 azure-terraform-api
 git clone https://github.com/your-org/terraform-infra.git
 cd terraform-infra
 
-# Run the CLI script
+# Run the Python script to configure your environment
 python3 main.py
-
-# OR use the API
-uvicorn app.main:app --reload
 
 # Deploy the infrastructure
 terraform init
@@ -181,38 +160,27 @@ terraform apply
 
 ---
 
-## 🧪 Testing
-
-Run all tests with:
-
-```bash
-pytest tests/
-```
-
-Includes:
-- Unit tests for Python input handlers and tfvars logic.
-- Terraform integration dry-run using `subprocess`.
-
----
-
-## 🧭 Architecture Diagram
+## 🗂️ Project Structure
 
 ```bash
 terraform-infra/
-├── main.tf                  # Orchestration - controls modules and resources
-├── variables.tf             # Input variable definitions
-├── terraform.tfvars         # Populated dynamically with runtime values
-├── outputs.tf               # Output values from resources
-├── main.py                  # Python CLI script with validations and input handling
-├── app/
-│   ├── main.py              # FastAPI backend for API-based configuration
-│   └── utils.py             # Reusable logic for validation and tfvars writing
-├── Dockerfile               # Containerized support for API
-├── tests/
-│   └── test_logic.py        # Unit & integration tests
+├── main.tf                  # Root Terraform config - includes modules
+├── variables.tf             # Input variable declarations
+├── terraform.tfvars         # Auto-generated from CLI/API input
+├── outputs.tf               # Output definitions
+├── main.py                  # CLI script with logging and validation
+├── api.py                   # Optional FastAPI interface
 ├── modules/
-│   ├── public_ip/           # Shared Public IP module
-│   ├── vm/                  # Virtual Machine module
-│   ├── k8s/                 # AKS Cluster module
-│   └── sql/                 # SQL Server module
+│   ├── public_ip/           # Shared Public IP logic
+│   ├── vm/                  # VM definition
+│   ├── k8s/                 # AKS definition
+│   └── sql/                 # SQL Server definition
 ```
+
+---
+
+## 🧠 Tip
+
+Use the Python CLI for guided configuration, or call the `/update-tfvars` API to plug this into a self-service UI.
+
+---
